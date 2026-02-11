@@ -5,41 +5,45 @@ import CompletedFlower from '../../components/CompletedFlower';
 import ValentineGuest from '../../components/ValentineGuest';
 import styles from './home.module.scss';
 
-const FLOWERS_PER_ROW = 6;
+const MIN_FLOWER_SLOTS = 24;
 
 const Home: React.FC = () => {
   const startDate = new Date('2022-06-15T00:00:00');
   const { completedFlowers, currentProgress, currentYearLabel } = useGarden(startDate);
 
-  const totalRenderedFlowers = Math.max(FLOWERS_PER_ROW * 3, completedFlowers + 1);
-  const completedToRender = Math.max(0, totalRenderedFlowers - 1);
+  const totalSlots = Math.max(MIN_FLOWER_SLOTS, completedFlowers + 1);
 
   return (
     <div className={styles.container}>
       <div className={styles.header}>
         <h1>Jardín del tiempo</h1>
         <p>Ciclo actual: {currentYearLabel}</p>
+        <small>Flores históricas ya crecidas: {completedFlowers}</small>
       </div>
 
       <ValentineGuest startDate={startDate} className={styles.specialGuest} />
 
       <div className={styles.gardenWrapper}>
-        {Array.from({ length: completedToRender }).map((_, index) => (
-          <div
-            key={`completed-${index}`}
-            className={styles.flowerItemSmall}
-            style={{ animationDelay: `${index * 60}ms` }}
-          >
-            <CompletedFlower />
-          </div>
-        ))}
+        {Array.from({ length: totalSlots }).map((_, index) => {
+          const isHistorical = index < completedFlowers;
+          const isCurrentFlower = index === completedFlowers;
 
-        <div
-          className={styles.flowerItemLarge}
-          style={{ animationDelay: `${completedToRender * 60}ms` }}
-        >
-          <TimeControlledLottie progress={currentProgress} />
-        </div>
+          return (
+            <div
+              key={`flower-slot-${index}`}
+              className={isCurrentFlower ? styles.flowerItemLarge : styles.flowerItemSmall}
+              style={{ animationDelay: `${index * 60}ms` }}
+            >
+              {isHistorical ? (
+                <CompletedFlower />
+              ) : (
+                <TimeControlledLottie
+                  progress={isCurrentFlower ? currentProgress : Math.max(5, currentProgress * 0.35)}
+                />
+              )}
+            </div>
+          );
+        })}
       </div>
     </div>
   );
