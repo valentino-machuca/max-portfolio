@@ -36,7 +36,7 @@ const Home: React.FC = () => {
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <h1>Mi jardín para Emilia</h1>
+        <h1>Mi jardín para Emi</h1>
         <p>Mes actual: {currentYearLabel}</p>
         <small>{completedFlowers} flores</small>
       </div>
