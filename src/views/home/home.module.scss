@@ -3,33 +3,41 @@
   min-height: 100vh;
   width: 100vw;
   overflow: hidden;
-  padding: 1rem;
   background: linear-gradient(180deg, #e8f7ff 0%, #f2fff6 55%, #ddf5dd 100%);
+  font-family: 'Sen', sans-serif;
 }
 
 .header {
   position: relative;
-  z-index: 3;
+  z-index: 1000;
   text-align: center;
+  padding-top: 2rem;
+  background: linear-gradient(to bottom, rgba(232, 247, 255, 0.9) 0%, rgba(232, 247, 255, 0) 100%);
+  pointer-events: none;
 
   h1 {
     margin: 0;
     color: #2d6a4f;
+    font-size: 1.8rem;
+    text-shadow: 0 2px 4px rgba(255,255,255,0.8);
   }
 
   p {
-    margin: 0.5rem 0 0;
+    margin: 0.2rem 0;
     color: #3a5a40;
     font-weight: 600;
   }
 
   small {
     display: inline-block;
-    margin-top: 0.35rem;
+    margin-top: 0.5rem;
     color: #2f5233;
-    background: rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(4px);
     border-radius: 999px;
-    padding: 0.2rem 0.7rem;
+    padding: 0.2rem 0.8rem;
+    font-size: 0.75rem;
+    border: 1px solid rgba(255,255,255,0.8);
   }
 }
 
@@ -37,31 +45,127 @@
   position: absolute;
   top: 1rem;
   right: 1rem;
-  z-index: 4;
-  width: clamp(90px, 12vw, 150px);
+  z-index: 1001;
+  width: clamp(80px, 15vw, 120px);
 }
 
-.gardenWrapper {
+.scatteredGarden {
   position: absolute;
   inset: 0;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
-  align-content: end;
-  gap: 0.3rem;
-  padding: 6rem 1rem 1rem;
+  pointer-events: none;
 }
 
-.flowerItemSmall,
-.flowerItemLarge {
-  height: min(20vh, 170px);
-  will-change: transform;
+.flowerWrapper {
+  position: absolute;
+  width: 120px; 
+  height: 140px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  pointer-events: auto;
+  transition: transform 0.3s ease-out;
+  animation: float 6s ease-in-out infinite;
+  &:nth-child(even) { animation-duration: 7s; }
+  &:nth-child(3n) { animation-duration: 5s; }
+  text-align: center;
+
+  &:hover {
+    z-index: 1000 !important;
+    transform: scale(1.1) !important;
+    
+    .flowerLabel {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
 }
 
-.flowerItemSmall {
-  filter: saturate(0.85);
+.currentWrapper {
+  
+  .flowerLabel {
+    background: rgba(255, 255, 255, 0.9);
+    color: #3b3838;
+    font-weight: bold;
+    border: 1px solid #ffcccc;
+    opacity: 1;
+    text-align: center;
+  }
 }
 
-.flowerItemLarge {
-  height: min(24vh, 220px);
-  filter: drop-shadow(0 10px 14px rgba(246, 190, 46, 0.45));
+.flowerVisual {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 10px 6px rgba(46, 124, 73, 0.2)); 
+}
+
+.flowerLabel {
+  margin-bottom: -10px;
+  padding: 2px 8px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(2px);
+  font-size: 0.7rem;
+  color: #555;
+  white-space: nowrap;
+  opacity: 0.6;
+  transition: all 0.3s ease;
+  z-index: 2;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.seedMarker {
+  width: 10px;
+  height: 10px;
+  background: #aaccbb;
+  border-radius: 50%;
+  margin-bottom: 20px;
+  opacity: 0.5;
+}
+
+.historicalWrapper {
+  opacity: 0.45; // Flor del pasado, más tenue
+  filter: saturate(0.8) contrast(0.9);
+  transition: all 0.4s ease;
+
+  &:hover {
+    opacity: 1;
+    filter: saturate(1.2);
+    transform: scale(1.1) !important;
+    z-index: 1000 !important;
+  }
+}
+
+.currentWrapper {
+  filter: drop-shadow(0 0 10px rgba(74, 222, 128, 0.4)); // Un aura verde para la de Emilia
+  
+  .flowerLabel {
+    background: #2d6a4f;
+    color: white;
+    border: none;
+    opacity: 1;
+    animation: pulse 2s infinite;
+  }
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-10px) rotate(1deg); }
+}
+
+@media (max-width: 768px) {
+  .flowerWrapper {
+    width: 90px;
+    height: 110px;
+  }
+  
+  .header h1 {
+    font-size: 1.5rem;
+  }
 }

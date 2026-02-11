@@ -1,47 +1,78 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useGarden } from '../../hooks/useGarden';
-import TimeControlledLottie from '../../components/TimeControllerLottie';
-import CompletedFlower from '../../components/CompletedFlower';
-import ValentineGuest from '../../components/ValentineGuest';
+import CurrentYearFlower from '../../components/CurrentYearFlower';
 import styles from './home.module.scss';
+import CompletedFlower from '../../components/CompletedFlower';
 
-const MIN_FLOWER_SLOTS = 24;
+const MIN_FLOWER_SLOTS = 24; // Mínimo de flores para que se vea lleno
 
+// Definimos la estructura de una posición
+interface Position {
+  top: number;
+  left: number;
+  scale: number;
+  zIndex: number;
+}
+
+// ... imports
 const Home: React.FC = () => {
-  const startDate = new Date('2022-06-15T00:00:00');
+  const startDate = new Date('2025-06-15');
   const { completedFlowers, currentProgress, currentYearLabel } = useGarden(startDate);
-
   const totalSlots = Math.max(MIN_FLOWER_SLOTS, completedFlowers + 1);
+  
+  const [positions, setPositions] = useState<Position[]>([]);
+
+  useEffect(() => {
+    // Generar posiciones aleatorias (una sola vez)
+    const newPositions = Array.from({ length: totalSlots }).map(() => ({
+      top: 15 + Math.random() * 70,
+      left: 5 + Math.random() * 85,
+      scale: 0.8 + Math.random() * 0.4,
+      zIndex: 0, // Se calculará abajo
+    }));
+    setPositions(newPositions);
+  }, [totalSlots]);
 
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <h1>Jardín del tiempo</h1>
-        <p>Ciclo actual: {currentYearLabel}</p>
-        <small>Flores históricas ya crecidas: {completedFlowers}</small>
+        <h1>Mi jardín para Emilia</h1>
+        <p>Mes actual: {currentYearLabel}</p>
+        <small>{completedFlowers} flores</small>
       </div>
 
-      <ValentineGuest startDate={startDate} className={styles.specialGuest} />
-
-      <div className={styles.gardenWrapper}>
-        {Array.from({ length: totalSlots }).map((_, index) => {
+      <div className={styles.scatteredGarden}>
+        {positions.map((pos, index) => {
           const isHistorical = index < completedFlowers;
           const isCurrentFlower = index === completedFlowers;
+          
+          const flowerDate = new Date(startDate);
+          flowerDate.setMonth(startDate.getMonth() + index);
+          const label = flowerDate.toLocaleDateString('es-ES', { month: 'short', year: '2-digit' }).toUpperCase();
+
+          const style = {
+            top: `${pos.top}%`,
+            left: `${pos.left}%`,
+            transform: `scale(${isCurrentFlower ? 1.2 : pos.scale})`,
+            zIndex: isCurrentFlower ? 100 : Math.floor(pos.top),
+          };
 
           return (
-            <div
-              key={`flower-slot-${index}`}
-              className={isCurrentFlower ? styles.flowerItemLarge : styles.flowerItemSmall}
-            >
-              {isHistorical ? (
-                <CompletedFlower delayMs={index * 60} animateOnLoad />
-              ) : (
-                <TimeControlledLottie
-                  progress={isCurrentFlower ? currentProgress : Math.max(5, currentProgress * 0.35)}
-                  delayMs={index * 60}
-                  animateFromStart
-                />
-              )}
+            <div key={index} className={`${styles.flowerWrapper} ${isCurrentFlower ? styles.currentWrapper : styles.historicalWrapper}`} style={style}>
+              <div className={styles.flowerVisual}>
+                {isHistorical && <>
+                  <div className={styles.flowerLabel}>
+                    {isCurrentFlower ? 'Creciendo 🌱' : label}
+                  </div>
+                  <CompletedFlower delayMs={index * 90} />
+                </>}
+                {isCurrentFlower && <>
+                  <div className={styles.flowerLabel}>
+                    {isCurrentFlower ? 'Creciendo 🌱' : label}
+                  </div>
+                  <CurrentYearFlower progress={currentProgress} />
+                </>}
+              </div>
             </div>
           );
         })}

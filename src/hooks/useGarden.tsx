@@ -1,67 +1,30 @@
-import { useEffect, useState } from 'react';
+import { useMemo } from 'react';
 
-interface GardenState {
-  completedFlowers: number;
-  currentProgress: number;
-  currentYearLabel: string;
-}
+export const useGarden = (startDate: Date) => {
+  return useMemo(() => {
+    const now = new Date();
+    const start = new Date(startDate);
 
-const MS_IN_DAY = 1000 * 60 * 60 * 24;
+    if (now < start) return { completedFlowers: 0, currentProgress: 0, currentYearLabel: 'Aún no comienza' };
+    let totalMonths = (now.getFullYear() - start.getFullYear()) * 12 + (now.getMonth() - start.getMonth());
+    
+    const isBeforeAnniversaryDay = now.getDate() < start.getDate();
+    if (isBeforeAnniversaryDay) totalMonths--;
 
-const getCycleStartForDate = (date: Date, startDate: Date) => {
-  const cycleStart = new Date(startDate);
-  cycleStart.setFullYear(date.getFullYear());
+    const completedFlowers = Math.max(0, totalMonths);
+    const last15 = new Date(now.getFullYear(), now.getMonth() - (isBeforeAnniversaryDay ? 1 : 0), start.getDate());
+    const next15 = new Date(now.getFullYear(), now.getMonth() + (isBeforeAnniversaryDay ? 0 : 1), start.getDate());
+    
+    const diffTotal = next15.getTime() - last15.getTime();
+    const diffElapsed = now.getTime() - last15.getTime();
+    const currentProgress = (diffElapsed / diffTotal) * 100;
 
-  if (date < cycleStart) {
-    cycleStart.setFullYear(date.getFullYear() - 1);
-  }
+    const label = now.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
 
-  return cycleStart;
-};
-
-export const useGarden = (startDate: Date): GardenState => {
-  const [state, setState] = useState<GardenState>({
-    completedFlowers: 0,
-    currentProgress: 0,
-    currentYearLabel: '',
-  });
-
-  useEffect(() => {
-    const calculateGarden = () => {
-      const now = new Date();
-      const start = new Date(startDate);
-
-      if (now < start) {
-        setState({
-          completedFlowers: 0,
-          currentProgress: 0,
-          currentYearLabel: `${start.getFullYear()} - ${start.getFullYear() + 1}`,
-        });
-        return;
-      }
-
-      const cycleStart = getCycleStartForDate(now, start);
-      const nextCycleStart = new Date(cycleStart);
-      nextCycleStart.setFullYear(cycleStart.getFullYear() + 1);
-
-      const cycleDuration = nextCycleStart.getTime() - cycleStart.getTime();
-      const elapsedTime = now.getTime() - cycleStart.getTime();
-      const progress = Math.min((elapsedTime / cycleDuration) * 100, 100);
-
-      const elapsedDays = Math.floor(elapsedTime / MS_IN_DAY);
-      const monthlyProgress = Math.floor((elapsedDays / 30.44) * (100 / 12));
-
-      const completedFlowers = Math.max(0, cycleStart.getFullYear() - start.getFullYear());
-
-      setState({
-        completedFlowers,
-        currentProgress: Math.min(100, Math.max(progress, monthlyProgress)),
-        currentYearLabel: `${cycleStart.getFullYear()} - ${cycleStart.getFullYear() + 1}`,
-      });
+    return {
+      completedFlowers,
+      currentProgress,
+      currentYearLabel: label.charAt(0).toUpperCase() + label.slice(1),
     };
-
-    calculateGarden();
   }, [startDate]);
-
-  return state;
 };
