@@ -1,46 +1,80 @@
-// src/pages/Home/Home.module.scss
 .container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  position: relative;
   min-height: 100vh;
-  background-color: #f4f7f6; // Un fondo gris muy claro y limpio
+  width: 100vw;
   overflow: hidden;
+  padding: 1rem;
+  background: linear-gradient(180deg, #e8f7ff 0%, #f2fff6 55%, #ddf5dd 100%);
 }
 
-.gardenWrapper {
-  display: flex;
-  align-items: flex-end; // Alineamos las bases de las macetas
-  gap: 15px;
-  padding-bottom: 40px; // Espacio desde abajo
-  // Opcional: una línea sutil de suelo
-  border-bottom: 3px solid #e0e0e0;
-}
+.header {
+  position: relative;
+  z-index: 3;
+  text-align: center;
 
-// Contenedor para las flores viejas
-.flowerItemSmall {
-  width: 100px;
-  height: 120px;
-  // Opcional: un pequeño efecto al pasar el mouse
-  transition: transform 0.3s ease;
-  &:hover {
-    transform: translateY(-10px);
+  h1 {
+    margin: 0;
+    color: #2d6a4f;
+  }
+
+  p {
+    margin: 0.5rem 0 0;
+    color: #3a5a40;
+    font-weight: 600;
+  }
+
+  small {
+    display: inline-block;
+    margin-top: 0.35rem;
+    color: #2f5233;
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 999px;
+    padding: 0.2rem 0.7rem;
   }
 }
 
-// Contenedor para la flor actual (protagonista)
-.flowerItemLarge {
-  width: 180px;
-  height: 220px;
-  margin-left: 20px; // Separarla un poco del grupo anterior
-  // Sombra suave para darle profundidad
-  filter: drop-shadow(0 10px 15px rgba(0,0,0,0.1));
-  
-  // Opcional: Un brillo sutil
-   animation: subtleGlow 3s infinite alternate;
+.specialGuest {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 4;
+  width: clamp(90px, 12vw, 150px);
 }
 
-@keyframes subtleGlow {
-    from { filter: drop-shadow(0 5px 5px rgba(0,0,0,0.1)); }
-    to { filter: drop-shadow(0 15px 20px rgba(255, 223, 0, 0.25)); }
+.gardenWrapper {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  align-content: end;
+  gap: 0.3rem;
+  padding: 6rem 1rem 1rem;
+}
+
+.flowerItemSmall,
+.flowerItemLarge {
+  height: min(20vh, 170px);
+  transform: translateY(200px);
+  opacity: 0;
+  animation: flowerRise 700ms ease-out forwards;
+}
+
+.flowerItemSmall {
+  filter: saturate(0.85);
+}
+
+.flowerItemLarge {
+  height: min(24vh, 220px);
+  filter: drop-shadow(0 10px 14px rgba(246, 190, 46, 0.45));
+}
+
+@keyframes flowerRise {
+  from {
+    transform: translateY(220px) scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
 }
