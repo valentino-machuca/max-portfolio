@@ -32,13 +32,14 @@ const Home: React.FC = () => {
             <div
               key={`flower-slot-${index}`}
               className={isCurrentFlower ? styles.flowerItemLarge : styles.flowerItemSmall}
-              style={{ animationDelay: `${index * 60}ms` }}
             >
               {isHistorical ? (
-                <CompletedFlower />
+                <CompletedFlower delayMs={index * 60} animateOnLoad />
               ) : (
                 <TimeControlledLottie
                   progress={isCurrentFlower ? currentProgress : Math.max(5, currentProgress * 0.35)}
+                  delayMs={index * 60}
+                  animateFromStart
                 />
               )}
             </div>

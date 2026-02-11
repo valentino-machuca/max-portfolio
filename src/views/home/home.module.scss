@@ -54,9 +54,7 @@
 .flowerItemSmall,
 .flowerItemLarge {
   height: min(20vh, 170px);
-  transform: translateY(200px);
-  opacity: 0;
-  animation: flowerRise 700ms ease-out forwards;
+  will-change: transform;
 }
 
 .flowerItemSmall {
@@ -66,15 +64,4 @@
 .flowerItemLarge {
   height: min(24vh, 220px);
   filter: drop-shadow(0 10px 14px rgba(246, 190, 46, 0.45));
-}
-
-@keyframes flowerRise {
-  from {
-    transform: translateY(220px) scale(0.95);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0) scale(1);
-    opacity: 1;
-  }
 }
