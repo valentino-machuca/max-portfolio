@@ -1,27 +1,33 @@
-import React from "react";
-import s from './home.module.scss'
-import Sign from "../../components/sign/sign";
+// src/pages/Home/Home.tsx
+import React from 'react';
+import { useGarden } from '../../hooks/useGarden'; // Asegúrate de tener el hook actualizado
+import TimeControlledLottie from '../../components/TimeControllerLottie';
+import CompletedFlower from '../../components/CompletedFlower';
+import styles from './Home.module.scss';
 
-import cloud_1 from '../../assets/clouds/cloud_1.png';
-import cloud_2 from '../../assets/clouds/cloud_2.png';
+const Home: React.FC = () => {
+  // Fecha de prueba antigua para ver el historial
+  const startDate = new Date('2022-06-15T00:00:00'); 
+  
+  const { completedFlowers, currentProgress } = useGarden(startDate);
 
-function Home(): React.ReactElement {
   return (
-    <div className={s.main}>
-        {
-          [...Array(5)].map((_, index) => (
-            <img key={index} src={cloud_2} alt={`cloud_${index}`} className={s.cloud_2} style={{ left: `${index * 20}%`, top: `75%`}}/>
-          ))
-        }
-        {
-          [...Array(3)].map((_, index) => (
-            <img key={index} src={cloud_2} alt={`cloud_${index}`} className={s.cloud_3} style={{ left: `${index * 30}%`, top: `75%`}}/>
-          ))
-        }
-        <Sign/>
-        <img src={cloud_1} alt="cloud_1" className={s.cloud_1}/>
+    <div className={styles.container}>
+      <div className={styles.gardenWrapper}>
+        {/* Flores Pasadas */}
+        {Array.from({ length: completedFlowers }).map((_, index) => (
+          <div key={index} className={styles.flowerItemSmall}>
+            <CompletedFlower />
+          </div>
+        ))}
+
+        {/* Flor Actual (Más grande) */}
+        <div className={styles.flowerItemLarge}>
+          <TimeControlledLottie progress={currentProgress} />
+        </div>
+      </div>
     </div>
-  )
-}
+  );
+};
 
 export default Home;
