@@ -1,11 +1,23 @@
-// src/hooks/useGarden.ts
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 interface GardenState {
-  completedFlowers: number; // Cantidad de flores terminadas (años pasados)
-  currentProgress: number;  // 0 a 100 (progreso del año actual)
-  currentYearLabel: string; // Ej: "Ciclo 2025-2026"
+  completedFlowers: number;
+  currentProgress: number;
+  currentYearLabel: string;
 }
+
+const MS_IN_DAY = 1000 * 60 * 60 * 24;
+
+const getCycleStartForDate = (date: Date, startDate: Date) => {
+  const cycleStart = new Date(startDate);
+  cycleStart.setFullYear(date.getFullYear());
+
+  if (date < cycleStart) {
+    cycleStart.setFullYear(date.getFullYear() - 1);
+  }
+
+  return cycleStart;
+};
 
 export const useGarden = (startDate: Date): GardenState => {
   const [state, setState] = useState<GardenState>({
@@ -18,30 +30,33 @@ export const useGarden = (startDate: Date): GardenState => {
     const calculateGarden = () => {
       const now = new Date();
       const start = new Date(startDate);
-      const diffTime = now.getTime() - start.getTime();
-      
-      if (diffTime < 0) return;
 
-      let yearsPassed = now.getFullYear() - start.getFullYear();
-      
-      const anniversaryThisYear = new Date(start);
-      anniversaryThisYear.setFullYear(now.getFullYear());
-
-      if (now < anniversaryThisYear) {
-        yearsPassed--;
+      if (now < start) {
+        setState({
+          completedFlowers: 0,
+          currentProgress: 0,
+          currentYearLabel: `${start.getFullYear()} - ${start.getFullYear() + 1}`,
+        });
+        return;
       }
 
-      const currentCycleStart = new Date(start);
-      currentCycleStart.setFullYear(now.getFullYear() + (now < anniversaryThisYear ? -1 : 0));
-      
-      const timeSinceCycleStart = now.getTime() - currentCycleStart.getTime();
-      const daysInYear = 365; 
-      const progress = Math.min((timeSinceCycleStart / (1000 * 60 * 60 * 24 * daysInYear)) * 100, 100);
+      const cycleStart = getCycleStartForDate(now, start);
+      const nextCycleStart = new Date(cycleStart);
+      nextCycleStart.setFullYear(cycleStart.getFullYear() + 1);
+
+      const cycleDuration = nextCycleStart.getTime() - cycleStart.getTime();
+      const elapsedTime = now.getTime() - cycleStart.getTime();
+      const progress = Math.min((elapsedTime / cycleDuration) * 100, 100);
+
+      const elapsedDays = Math.floor(elapsedTime / MS_IN_DAY);
+      const monthlyProgress = Math.floor((elapsedDays / 30.44) * (100 / 12));
+
+      const completedFlowers = Math.max(0, cycleStart.getFullYear() - start.getFullYear());
 
       setState({
-        completedFlowers: Math.max(0, yearsPassed),
-        currentProgress: progress,
-        currentYearLabel: `${currentCycleStart.getFullYear()} - ${currentCycleStart.getFullYear() + 1}`,
+        completedFlowers,
+        currentProgress: Math.min(100, Math.max(progress, monthlyProgress)),
+        currentYearLabel: `${cycleStart.getFullYear()} - ${cycleStart.getFullYear() + 1}`,
       });
     };
 

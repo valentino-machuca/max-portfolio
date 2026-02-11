@@ -1,28 +1,54 @@
-// src/components/CompletedFlower/CompletedFlower.tsx
-import React, { useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Lottie, { type LottieRefCurrentProps } from 'lottie-react';
 import flowerAnimation from '../assets/flower.json';
 
-const CompletedFlower: React.FC = () => {
-    const lottieRef = useRef<LottieRefCurrentProps>(null);
+interface CompletedFlowerProps {
+  delayMs?: number;
+  animateOnLoad?: boolean;
+}
 
-    const handleLoaded = () => {
-        // Cuando carga, vamos directamente al último frame y paramos.
-        if(lottieRef.current) {
-            const lastFrame = lottieRef.current.getDuration(true) || 100;
-            lottieRef.current.goToAndStop(lastFrame, true);
-        }
-    }
+const CompletedFlower: React.FC<CompletedFlowerProps> = ({
+  delayMs = 0,
+  animateOnLoad = true,
+}) => {
+  const lottieRef = useRef<LottieRefCurrentProps>(null);
+  const [isReady, setIsReady] = useState(false);
+
+  useEffect(() => {
+    const instance = lottieRef.current;
+    if (!instance || !isReady) return;
+
+    const lastFrame = instance.getDuration(true) || 100;
+
+    const timeoutId = window.setTimeout(() => {
+      if (animateOnLoad) {
+        instance.playSegments([0, lastFrame], true);
+        return;
+      }
+
+      instance.goToAndStop(lastFrame, true);
+    }, delayMs);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [animateOnLoad, delayMs, isReady]);
+
+  const handleComplete = () => {
+    const instance = lottieRef.current;
+    if (!instance) return;
+
+    const lastFrame = instance.getDuration(true) || 100;
+    instance.goToAndStop(lastFrame, true);
+  };
 
   return (
-    // Un poco más transparentes para que destaquen menos que la actual
-    <div style={{ width: '100%', height: '100%', opacity: 0.7, filter: 'grayscale(0.3)' }}>
+    <div style={{ width: '100%', height: '100%', opacity: 0.78, filter: 'grayscale(0.25)' }}>
       <Lottie
         lottieRef={lottieRef}
         animationData={flowerAnimation}
         loop={false}
         autoplay={false}
-        onDOMLoaded={handleLoaded}
+        onDOMLoaded={() => setIsReady(true)}
+        onComplete={handleComplete}
         style={{ width: '100%', height: '100%' }}
       />
     </div>

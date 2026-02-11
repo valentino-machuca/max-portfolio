@@ -1,30 +1,50 @@
-// src/pages/Home/Home.tsx
 import React from 'react';
-import { useGarden } from '../../hooks/useGarden'; // Asegúrate de tener el hook actualizado
+import { useGarden } from '../../hooks/useGarden';
 import TimeControlledLottie from '../../components/TimeControllerLottie';
 import CompletedFlower from '../../components/CompletedFlower';
-import styles from './Home.module.scss';
+import ValentineGuest from '../../components/ValentineGuest';
+import styles from './home.module.scss';
+
+const MIN_FLOWER_SLOTS = 24;
 
 const Home: React.FC = () => {
-  // Fecha de prueba antigua para ver el historial
-  const startDate = new Date('2022-06-15T00:00:00'); 
-  
-  const { completedFlowers, currentProgress } = useGarden(startDate);
+  const startDate = new Date('2022-06-15T00:00:00');
+  const { completedFlowers, currentProgress, currentYearLabel } = useGarden(startDate);
+
+  const totalSlots = Math.max(MIN_FLOWER_SLOTS, completedFlowers + 1);
 
   return (
     <div className={styles.container}>
-      <div className={styles.gardenWrapper}>
-        {/* Flores Pasadas */}
-        {Array.from({ length: completedFlowers }).map((_, index) => (
-          <div key={index} className={styles.flowerItemSmall}>
-            <CompletedFlower />
-          </div>
-        ))}
+      <div className={styles.header}>
+        <h1>Jardín del tiempo</h1>
+        <p>Ciclo actual: {currentYearLabel}</p>
+        <small>Flores históricas ya crecidas: {completedFlowers}</small>
+      </div>
 
-        {/* Flor Actual (Más grande) */}
-        <div className={styles.flowerItemLarge}>
-          <TimeControlledLottie progress={currentProgress} />
-        </div>
+      <ValentineGuest startDate={startDate} className={styles.specialGuest} />
+
+      <div className={styles.gardenWrapper}>
+        {Array.from({ length: totalSlots }).map((_, index) => {
+          const isHistorical = index < completedFlowers;
+          const isCurrentFlower = index === completedFlowers;
+
+          return (
+            <div
+              key={`flower-slot-${index}`}
+              className={isCurrentFlower ? styles.flowerItemLarge : styles.flowerItemSmall}
+            >
+              {isHistorical ? (
+                <CompletedFlower delayMs={index * 60} animateOnLoad />
+              ) : (
+                <TimeControlledLottie
+                  progress={isCurrentFlower ? currentProgress : Math.max(5, currentProgress * 0.35)}
+                  delayMs={index * 60}
+                  animateFromStart
+                />
+              )}
+            </div>
+          );
+        })}
       </div>
     </div>
   );
