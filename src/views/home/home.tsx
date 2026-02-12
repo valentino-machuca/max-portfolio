@@ -36,8 +36,8 @@ const Home: React.FC = () => {
     <div className={styles.container}>
       <div className={styles.header}>
         <h1>Mi jardín para Emi</h1>
-        <p>{currentYearLabel}</p>
-        <small>{completedFlowers} flores</small>
+        <p>En este lugar va a existir una flor por cada mes que me regales a tu lado.</p>
+        <small>{completedFlowers + 1} flores</small>
       </div>
 
       <div className={styles.scatteredGarden}>
