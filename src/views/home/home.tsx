@@ -26,7 +26,7 @@ const Home: React.FC = () => {
     // Generar posiciones aleatorias (una sola vez)
     const newPositions = Array.from({ length: totalSlots }).map(() => ({
       top: 15 + Math.random() * 70,
-      left: 5 + Math.random() * 85,
+      left: 5 + Math.random() * 70,
       scale: 0.8 + Math.random() * 0.4,
       zIndex: 0, // Se calculará abajo
     }));
