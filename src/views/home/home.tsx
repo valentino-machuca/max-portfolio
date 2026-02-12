@@ -23,12 +23,11 @@ const Home: React.FC = () => {
   const [positions, setPositions] = useState<Position[]>([]);
 
   useEffect(() => {
-    // Generar posiciones aleatorias (una sola vez)
     const newPositions = Array.from({ length: totalSlots }).map(() => ({
       top: 15 + Math.random() * 70,
       left: 5 + Math.random() * 70,
       scale: 0.8 + Math.random() * 0.4,
-      zIndex: 0, // Se calculará abajo
+      zIndex: 0,
     }));
     setPositions(newPositions);
   }, [totalSlots]);
@@ -37,7 +36,7 @@ const Home: React.FC = () => {
     <div className={styles.container}>
       <div className={styles.header}>
         <h1>Mi jardín para Emi</h1>
-        <p>Mes actual: {currentYearLabel}</p>
+        <p>{currentYearLabel}</p>
         <small>{completedFlowers} flores</small>
       </div>
 
@@ -58,7 +57,12 @@ const Home: React.FC = () => {
           };
 
           return (
-            <div key={index} className={`${styles.flowerWrapper} ${isCurrentFlower ? styles.currentWrapper : styles.historicalWrapper}`} style={style}>
+            <div key={`flower-${index}`}
+                  className={`
+                    ${styles.flowerWrapper} 
+                    ${isCurrentFlower ? styles.currentWrapper : styles.historicalWrapper}
+                    ${index == 0 ? styles.anniversaryFlower : ''}
+                  `} style={style}>
               <div className={styles.flowerVisual}>
                 {isHistorical && <>
                   <div className={styles.flowerLabel}>
@@ -68,7 +72,7 @@ const Home: React.FC = () => {
                 </>}
                 {isCurrentFlower && <>
                   <div className={styles.flowerLabel}>
-                    {isCurrentFlower ? 'Creciendo 🌱' : label}
+                    {label}
                   </div>
                   <CurrentYearFlower progress={currentProgress} />
                 </>}
