@@ -17,7 +17,7 @@ interface Position {
 // ... imports
 const Home: React.FC = () => {
   const startDate = new Date('2025-06-15');
-  const { completedFlowers, currentProgress, currentYearLabel } = useGarden(startDate);
+  const { completedFlowers, currentProgress } = useGarden(startDate);
   const totalSlots = Math.max(MIN_FLOWER_SLOTS, completedFlowers + 1);
   
   const [positions, setPositions] = useState<Position[]>([]);
