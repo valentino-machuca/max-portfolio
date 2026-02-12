@@ -9,17 +9,17 @@ interface CompletedFlowerProps {
 }
 
 const DAY_TO_FRAME = [
-  0,  2,  4,  6,  8,  // Días 1-5 (Brote lento)
-  12, 16, 20, 24, 28, // Días 6-10 (Crecimiento de tallo)
-  33, 37, 40, 43, 45, // Días 11-15 (Aparición de capullo)
-  47, 49, 51, 52, 53, // Días 16-20 (Apertura progresiva)
-  54, 55, 56, 56, 57, // Días 21-25 (Detalles finales)
-  57, 58, 58, 59, 59, 59 // Días 26-31 (Flor completa)
+  8,  10,  11,  12,  13,  // Días 1-5 (Brote lento)
+  15, 16, 17, 18, 19, // Días 6-10 (Crecimiento de tallo)
+  20, 21, 22, 23, 24, // Días 11-15 (Aparición de capullo)
+  25, 26, 27, 28, 29, // Días 16-20 (Apertura progresiva)
+  30, 31, 32, 33, 34, // Días 21-25 (Detalles finales)
+  35, 36, 59, 59, 59, 59 // Días 26-31 (Flor completa)
 ];
 
 const getFrameForProgress = (progressPercent: number): number => {
-  // Convertimos el porcentaje (0-100) a un índice de día (0-30)
-  const dayIndex = Math.floor((progressPercent / 100) * (DAY_TO_FRAME.length - 1));
+  const dayIndex = Math.floor((progressPercent / 100) * (DAY_TO_FRAME.length));
+  console.log(`Progress: ${progressPercent.toFixed(2)}% -> Day Index: ${dayIndex}, Frame: ${DAY_TO_FRAME[dayIndex]}`);
   return DAY_TO_FRAME[dayIndex];
 };
 

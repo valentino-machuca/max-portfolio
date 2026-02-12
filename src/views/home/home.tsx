@@ -3,10 +3,10 @@ import { useGarden } from '../../hooks/useGarden';
 import CurrentYearFlower from '../../components/CurrentYearFlower';
 import styles from './home.module.scss';
 import CompletedFlower from '../../components/CompletedFlower';
+import Cat from '../../components/pets/cat/Cat';
 
-const MIN_FLOWER_SLOTS = 24; // Mínimo de flores para que se vea lleno
+const MIN_FLOWER_SLOTS = 24;
 
-// Definimos la estructura de una posición
 interface Position {
   top: number;
   left: number;
@@ -14,8 +14,10 @@ interface Position {
   zIndex: number;
 }
 
-// ... imports
 const Home: React.FC = () => {
+  const [catActive, setCatActive] = useState(false);
+
+
   const startDate = new Date('2025-06-15');
   const { completedFlowers, currentProgress } = useGarden(startDate);
   const totalSlots = Math.max(MIN_FLOWER_SLOTS, completedFlowers + 1);
@@ -40,7 +42,17 @@ const Home: React.FC = () => {
         <small>{completedFlowers + 1} flores</small>
       </div>
 
+      <button 
+        className={styles.catToggleBtn}
+        onClick={() => setCatActive(prev => !prev)}
+        aria-label={catActive ? "Ocultar gato" : "Mostrar gato"}
+        title={catActive ? "Guardar Pipi" : "Llamar a pipi"}
+      >
+        {catActive ? "Guardar a Pipi" : "Llamar a Pipi"}
+      </button>
+
       <div className={styles.scatteredGarden}>
+        {catActive && <Cat />}
         {positions.map((pos, index) => {
           const isHistorical = index < completedFlowers;
           const isCurrentFlower = index === completedFlowers;
@@ -68,7 +80,7 @@ const Home: React.FC = () => {
                   <div className={styles.flowerLabel}>
                     {isCurrentFlower ? 'Creciendo 🌱' : label}
                   </div>
-                  <CompletedFlower delayMs={index * 90} />
+                  <CompletedFlower delayMs={index * 90} index={index}/>
                 </>}
                 {isCurrentFlower && <>
                   <div className={styles.flowerLabel}>

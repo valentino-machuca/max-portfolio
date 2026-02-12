@@ -1,0 +1,11 @@
+.catContainer{
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    z-index: 100;
+
+    .catVisual {
+        width: 130%;
+        height: 100%;
+    }
+}
