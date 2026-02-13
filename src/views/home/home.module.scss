@@ -173,11 +173,11 @@
 
 .catToggleBtn {
   position: fixed;
-  bottom: 5rem;
-  right: 3rem;
-  width: 4rem;
-  height: 4rem;
-  border-radius: 50%;
+  bottom: 4rem;
+  right: 45vw;
+  width: 8rem;
+  height: 2rem;
+  border-radius: 8px;
   border: none;
   background-color: white;
   color: #222;
@@ -189,6 +189,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  border: 2px solid #222;
 
   &:hover {
     transform: scale(1.1) rotate(-5deg);
@@ -197,6 +198,7 @@
 
   &:active {
     transform: scale(0.95);
+    border: 0;
   }
 }
 
@@ -224,5 +226,9 @@
   
   .header h1 {
     font-size: 1.5rem;
+  }
+
+  .catToggleBtn{
+    right: 35vw;
   }
 }
